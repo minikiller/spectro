@@ -26,7 +26,7 @@ public class Fun {
      * @param hp_r  高通重建系数；
      */
 
-    private void My_Getfilters(String wname, Object[] lp_d, Object[] hp_d, Object[] lp_r, Object[] hp_r) {
+    public static void My_Getfilters(String wname, Object[] lp_d, Object[] hp_d, Object[] lp_r, Object[] hp_r) {
         if (wname.equals("harr")) {
             lp_d = new Object[]{0, 0.707106781186548, 0.707106781186548};
             hp_d = new Object[]{0, -0.707106781186548, 0.707106781186548};
@@ -133,8 +133,6 @@ public class Fun {
             }
             return;
         }
-
-
         if (length_in % 2 == 0) {
             mextend_out = new Double[length_in + 2 * Val_of_extend];
             for (int i = 1; i < Val_of_extend; i++) {
@@ -160,9 +158,16 @@ public class Fun {
     }
 
     //    private void CopyArr(Double[] B, Double[] a, Long n, Long mark1=1, Long mark2 =1) {
-    private void CopyArr(Double[] B, Double[] a, int n, int mark1, int mark2) {
+    public static void CopyArr(Double[] B, Double[] a, int n, int mark1, int mark2) {
         B = a.clone();//'将a数组赋值b数组上
+        //Call CopyMemory(ByVal VarPtr(B(mark1)), ByVal VarPtr(a(mark2)), n) '将a数组赋值b数组上
     }
+
+    public static void CopyArrDbl2(Double[] a , Double  B , Long mark  ,Long  n  ){
+//        CopyMemory(ByVal VarPtr(a(mark)), ByVal VarPtr(B(1)), n);
+    }
+
+
 
     /**
      * '*模块********************************************************
@@ -198,12 +203,39 @@ public class Fun {
         int length_in = sign_in.length;
         if (length_in % 2 == 1) {
             Downspl_out = new Double[(length_in - 1) / 2];
-            for (int i = 1; i < (int)((length_in - 1) / 2); i++)
+            for (int i = 1; i < (int) ((length_in - 1) / 2); i++)
                 Downspl_out[i] = sign_in[i * 2];
         } else {
-            Downspl_out =new Double[((length_in) / 2) ];
-            for (int i = 1; i < (int)((length_in) / 2); i++)
+            Downspl_out = new Double[((length_in) / 2)];
+            for (int i = 1; i < (int) ((length_in) / 2); i++)
                 Downspl_out[i] = sign_in[i * 2];
         }
     }
+
+    /**
+     * '*模块********************************************************
+     * 'My_Mtrim 数组下标以1开始
+     * '函数DMy_Mtrim 用于对小波分解系数序列进行前后裁剪，输出序列 Mtrim_out()。
+     * <p>
+     * '前后裁剪。例如:如裁剪2， x=[x1,x2,x3,x4,x5,x6,x7,x8]，则 y=[x3,x4,x5,x5,x6].
+     * <p>
+     * '***************************************************************
+     **/
+    private void My_Mtrim(Double[] sign_in, Integer Val_of_Mtrim, Double[] Mtrim_out) {
+        int length_in = sign_in.length;
+        if (length_in % 2 == 1) {
+            Mtrim_out = new Double[length_in - 2 * Val_of_Mtrim];
+            CopyArr(Mtrim_out, sign_in, (length_in - 2 * Val_of_Mtrim) * 8, 1, Val_of_Mtrim + 1);
+        } else {
+            Mtrim_out = new Double[length_in - 2 * Val_of_Mtrim];
+            CopyArr(Mtrim_out, sign_in, (length_in - 2 * Val_of_Mtrim) * 8, 1, Val_of_Mtrim + 1);
+        }
+    }
+
 }
+
+
+
+
+
+
