@@ -1,6 +1,6 @@
 package com.glyb.util;
 
-public class Fun {
+public class Util {
     /**
      * 对输入序列Sign_in()进行一维离散小波分解，输出分解序列
      *
@@ -138,7 +138,7 @@ public class Fun {
             for (int i = 1; i < Val_of_extend; i++) {
                 mextend_out[i] = sign_in[Val_of_extend - i + 1];
             }
-            CopyArr(mextend_out, sign_in, length_in * 8, Val_of_extend + 1, 1);
+            CopyArr(mextend_out, sign_in, Long.valueOf(length_in) * 8, Long.valueOf(Val_of_extend) + 1, 1L);
             for (int i = length_in + Val_of_extend + 1; i < length_in + 2 * Val_of_extend; i++) {
 
                 mextend_out[i] = sign_in[length_in + 2 * Val_of_extend - (i - length_in + Val_of_extend - 1)];
@@ -148,7 +148,7 @@ public class Fun {
             for (int i = 1; i < Val_of_extend; i++) {
                 mextend_out[i] = sign_in[Val_of_extend - i + 1];
             }
-            CopyArr(mextend_out, sign_in, length_in * 8, Val_of_extend + 1, 1);
+            CopyArr(mextend_out, sign_in, Long.valueOf(length_in) * 8, Long.valueOf(Val_of_extend) + 1, 1L);
             for (int i = length_in + Val_of_extend + 1; i < length_in + 2 * Val_of_extend + 1; i++)
                 mextend_out[i] = sign_in[length_in + 2 * Val_of_extend - (i - length_in + Val_of_extend - 1)];
 
@@ -158,13 +158,12 @@ public class Fun {
     }
 
     //    private void CopyArr(Double[] B, Double[] a, Long n, Long mark1=1, Long mark2 =1) {
-    public static void CopyArr(Double[] B, Double[] a, int n, int mark1, int mark2) {
-        B = a.clone();//'将a数组赋值b数组上
-        //Call CopyMemory(ByVal VarPtr(B(mark1)), ByVal VarPtr(a(mark2)), n) '将a数组赋值b数组上
+    public static void CopyArr(Double[] src, Double[] dest, Long length, Long srcPos, Long destPos) {
+        System.arraycopy(src, srcPos.intValue(), dest, destPos.intValue(), length.intValue());
     }
 
-    public static void CopyArrDbl2(Double[] a , Double  B , Long mark  ,Long  n  ){
-//        CopyMemory(ByVal VarPtr(a(mark)), ByVal VarPtr(B(1)), n);
+    public static void CopyArrDbl2(Double[] src , Double[]  dest , Long srcPos  ,Long  length  ){
+        System.arraycopy(src, srcPos.intValue(), dest, 1, length.intValue());
     }
 
 
@@ -225,10 +224,10 @@ public class Fun {
         int length_in = sign_in.length;
         if (length_in % 2 == 1) {
             Mtrim_out = new Double[length_in - 2 * Val_of_Mtrim];
-            CopyArr(Mtrim_out, sign_in, (length_in - 2 * Val_of_Mtrim) * 8, 1, Val_of_Mtrim + 1);
+            CopyArr(Mtrim_out, sign_in, (Long.valueOf(length_in) - 2 * Long.valueOf(Val_of_Mtrim)) * 8, 1L, Long.valueOf(Val_of_Mtrim) + 1);
         } else {
             Mtrim_out = new Double[length_in - 2 * Val_of_Mtrim];
-            CopyArr(Mtrim_out, sign_in, (length_in - 2 * Val_of_Mtrim) * 8, 1, Val_of_Mtrim + 1);
+            CopyArr(Mtrim_out, sign_in, (Long.valueOf(length_in) - 2 * Long.valueOf(Val_of_Mtrim)) * 8, 1L, Long.valueOf(Val_of_Mtrim) + 1);
         }
     }
 
