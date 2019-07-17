@@ -1,9 +1,10 @@
 package com.glyb;
+
 import com.oceanoptics.omnidriver.api.wrapper.Wrapper;
 
-public class Main {
+public class Normal {
 
-    public static void main(String[] args) {
+    public static double[] getSpectralData() {
         Wrapper wrapper = new Wrapper();             // Create a wrapper object
         int numberOfSpectrometers, numberOfPixels;   // variables for the program
         int integrationTime = 1000;                  // set the integration time
@@ -13,9 +14,9 @@ public class Main {
 
         // open the spectrometers and get the serial number of the first one:
         numberOfSpectrometers = wrapper.openAllSpectrometers(); // opens all of the spectrometers and returns the number of spectrometers found
-        if (numberOfSpectrometers < 1){              // Check for any spectrometers
+        if (numberOfSpectrometers < 1) {              // Check for any spectrometers
             System.out.println("There are no spectrometers attached to the computer");
-            return;
+            return null;
         }
         serialNumber = wrapper.getSerialNumber(0);              // gets the serial number from the first spectrometer
         System.out.println("Serial Number: " + serialNumber);   // prints the serial number to the screen
@@ -27,10 +28,10 @@ public class Main {
         numberOfPixels = wrapper.getNumberOfPixels(0);          // gets the number of pixels in the first spectrometer.
 
         // loop for printing the spectral data to the screen:
-        for (int i = 0; i < numberOfPixels; i++){
+        for (int i = 0; i < numberOfPixels; i++) {
             System.out.printf("Wavelength: %5.3f,  Intensity: %5.3f %n", wavelengths[i], spectralData[i]);
         }
-
+        return spectralData;
     }
 
 }
