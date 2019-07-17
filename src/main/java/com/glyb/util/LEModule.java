@@ -20,8 +20,8 @@ public class LEModule {
      * '          eps  - Double型变量。奇异值分解函数中的控制精度参数。
      * '  返回值： Boolean型。False，失败无解；True, 成功
      **/
-    public boolean LEMiv(int m, int n, double[] dblA, double[] dblB, double[] dblX, double[][] dblAP,
-                         double[] dblU, double[] dblV, int ka, double[] eps) {
+    public boolean LEMiv(int m, int n, double[][] dblA, double[] dblB, double[] dblX, double[][] dblAP,
+                         double[][] dblU, double[][] dblV, int ka, double eps) {
         // ' 局部变量
         int I, J;
 
@@ -33,54 +33,6 @@ public class LEModule {
             dblX[I] = 0;
             for (J = 1; J <= m; J++) {
                 dblX[I] = dblX[I] + dblAP[I][J] * dblB[J];
-            }
-        }
-        return true;
-    }
-
-    /**
-     * '  模块名：MatrixModule.bas
-     * '  函数名：MInv
-     * '  功能：  求矩阵的广义逆
-     * '  参数：   m    - Integer型变量。系数矩阵的行数， m>=n
-     * '           n    - Integer型变量。系数矩阵的列数，n<=m
-     * '          dblA  - Double型二维数组，体积维m x n。存放待分解矩阵；
-     * '                  返回时，其对角线存放矩阵的奇异值(以非递增次序排列)，其余元素为0。
-     * '          dblAP - Double型二维数组，体积维n x m。返回时存放矩阵的广义逆。
-     * '          dblU  - Double型二维数组，体积维m x m。返回时，存放奇异值分解式中的左奇异向量U。
-     * '          dblV  - Double型二维数组，体积维n x n。返回时，存放奇异值分解式中的右奇异向量VT。
-     * '           ka  - Integer型变量。ka=max(m,n)+1
-     * '          eps  - Double型变量。奇异值分解函数中的控制精度参数。
-     * '  返回值： Boolean型。False，失败无解；True, 成功
-     **/
-    public boolean MInv(int m, int n, double[][] dblA, double[][] dblAP, double[][] dblU, double[][] dblV, int ka, double eps) {
-//        ' 局部变量
-        int I, J, k, L;
-        if (!MUav(m, n, dblA, dblU, dblV, ka, eps))
-            return false;
-
-        J = n;
-        if (m < n) J = m;
-        J = J - 1;
-        k = 0;
-        while (k <= J) {
-            if (dblA[k + 1][k + 1] == 0) {
-                //todo goto label
-                break;
-            }
-            k = k + 1;
-        }
-
-        o_lable:
-        {
-            k = k - 1;
-            for (I = 0; I <= n - 1; I++) {
-                for (J = 0; J <= m - 1; J++) {
-                    dblAP[I + 1][J + 1] = 0;
-                    for (L = 0; L <= k; L++) {
-                        dblAP[I + 1][J + 1] = dblAP[I + 1][J + 1] + dblV[L + 1][I + 1] * dblU[J + 1][L + 1] / dblA[L + 1][L + 1];
-                    }
-                }
             }
         }
         return true;
@@ -136,7 +88,7 @@ public class LEModule {
                     for (I = kk; I <= m; I++) {
                         d = d + dblA[I][kk] * dblA[I][kk];
                     }
-                    s[kk] = Sqr[d];
+                    s[kk] = Math.sqrt(d);
                     if (s[kk] != 0) {
                         if (dblA[kk][kk] != 0) {
                             s[kk] = Math.abs(s[kk]);
@@ -174,7 +126,7 @@ public class LEModule {
                     d = 0;
                     for (I = kk + 1; I <= n; I++)
                         d = d + e[I] * e[I];
-                    e[kk] = Sqr(d);
+                    e[kk] = Math.sqrt(d);
                     if (e[kk] != 0) {
                         if (e[kk + 1] != 0) {
                             e[kk] = Math.abs(e[kk]);
@@ -280,12 +232,10 @@ public class LEModule {
         while (true) {
             if (mm == 0) {
                 Cal1(dblA, e, s, dblV, m, n);
-                break;
                 return true;
             }
             if (it == 0) {
                 Cal1(dblA, e, s, dblV, m, n);
-                break;
                 return false;
             }
             kk = mm - 1;
@@ -447,6 +397,118 @@ public class LEModule {
             }
 
         }
+//        return true;
+    }
+
+    /**
+     * ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+     * '  模块名：MatrixModule.bas
+     * '  函数名：Cal1
+     * '  功能：  内部过程，供MUav函数调用
+     * ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+     */
+
+    private void Cal1(double[][] dblA, double[] e, double[] s, double[][] dblV, int m, int n) {
+        int I, J, q;
+        double d;
+        if (m >= n)
+            I = n;
+        else
+            I = m;
+        for (J = 1; J <= I - 1; J++) {
+            dblA[J][J] = s[J];
+            dblA[J][J + 1] = e[J];
+        }
+        dblA[I][I] = s[I];
+        if (m < n) dblA[I][I + 1] = e[I];
+        for (I = 1; I <= n - 1; I++) {
+            for (J = I + 1; J <= n; J++) {
+                d = dblV[I][J];
+                dblV[I][J] = dblV[J][I];
+                dblV[J][I] = d;
+            }
+        }
+
+    }
+
+    /**
+     * ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+     * '  模块名：MatrixModule.bas
+     * '  函数名：Cal2
+     * '  功能：  内部过程，供MUav函数调用
+     * ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+     */
+    private void Cal2(double[] fg, double[] cs) {
+        double R, d;
+        if ((Math.abs(fg[1]) + Math.abs(fg[2])) == 0) {
+            cs[1] = 1;
+            cs[2] = 0;
+            d = 0;
+        } else {
+            d = Math.sqrt((fg[1] * fg[1] + fg[2] * fg[2]));
+            if (Math.abs(fg[1]) > Math.abs(fg[2])) {
+                d = Math.abs(d);
+                if (fg[1] < 0) d = -d;
+            }
+            if (Math.abs(fg[2]) >= Math.abs(fg[1])) {
+                d = Math.abs(d);
+                if (fg[2] < 0) d = -d;
+            }
+            cs[1] = fg[1] / d;
+            cs[2] = fg[2] / d;
+            R = 1;
+            if (Math.abs(fg[1]) > Math.abs(fg[2]))
+                R = cs[2];
+            else if (cs[1] != 0)
+                R = 1 / cs[1];
+            fg[1] = d;
+            fg[2] = R;
+        }
+
+    }
+
+    /**
+     * ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+     * '  模块名：MatrixModule.bas
+     * '  函数名：MInv
+     * '  功能：  求矩阵的广义逆
+     * '  参数：   m    - Integer型变量。系数矩阵的行数， m>=n
+     * '           n    - Integer型变量。系数矩阵的列数，n<=m
+     * '          dblA  - Double型二维数组，体积维m x n。存放待分解矩阵；
+     * '                  返回时，其对角线存放矩阵的奇异值(以非递增次序排列)，其余元素为0。
+     * '          dblAP - Double型二维数组，体积维n x m。返回时存放矩阵的广义逆。
+     * '          dblU  - Double型二维数组，体积维m x m。返回时，存放奇异值分解式中的左奇异向量U。
+     * '          dblV  - Double型二维数组，体积维n x n。返回时，存放奇异值分解式中的右奇异向量VT。
+     * '           ka  - Integer型变量。ka=max(m,n)+1
+     * '          eps  - Double型变量。奇异值分解函数中的控制精度参数。
+     * '  返回值： Boolean型。False，失败无解；True, 成功
+     * ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+     */
+    private boolean MInv(int m, int n, double[][] dblA, double[][] dblAP, double[][] dblU, double[][] dblV, int ka, double eps) {
+        int I, J, k, L;
+        if (!MUav(m, n, dblA, dblU, dblV, ka, eps)) {
+            return false;
+        }
+        J = n;
+        if (m < n) J = m;
+        J = J - 1;
+        k = 0;
+        while (k <= J) {
+            if (dblA[k + 1][k + 1] == 0)
+                break;
+            k = k + 1;
+        }
+
+        k = k - 1;
+        for (I = 0; I <= n - 1; I++) {
+            for (J = 0; J <= m - 1; J++) {
+                dblAP[I + 1][J + 1] = 0;
+                for (L = 0; L <= k; L++) {
+                    dblAP[I + 1][J + 1] = dblAP[I + 1][J + 1] + dblV[L + 1][I + 1] * dblU[J + 1][L + 1] / dblA[L + 1][L + 1];
+                }
+            }
+        }
         return true;
     }
+
 }

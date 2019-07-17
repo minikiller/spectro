@@ -18,7 +18,7 @@ public class TimerThree {
         double[] temp_NO, Index = new double[]{};
         String pathandname;
         double[] length_wave;
-        int I=0, J=0;
+        int I = 0, J = 0;
         int n;
         Integer k = 0;
         double[] Nd_NO = new double[]{};
@@ -45,7 +45,7 @@ public class TimerThree {
             }
 
 //            '' '' '曲线拟合
-            Curve curve=new Curve();
+            Curve curve = new Curve();
             curve.My_curvefit(Low_index, Low_A, 7, xishu);
 
             //'标准差分吸光度
@@ -119,7 +119,8 @@ public class TimerThree {
             }
 
 //            '求解
-            if (LEMiv(200, 1, dblA, dblB, dblX, dblAP, dblU, dblV, 5, 0.00000000001))
+            LEModule module=new LEModule();
+            if (module.LEMiv(200, 1, dblA, dblB, dblX, dblAP, dblU, dblV, 5, 0.00000000001))
 //            ' MsgBox "求解成功！" & Chr$(13) & Chr$(13) & _
 //            "c1 = " & Round(dblX(1), 6) * 22.4 * 10 ^ 9 / (6.022 * 10 ^ 23) & Chr$(13) & _
 //            "矩阵A+" & Chr$(13) & Chr$(13) & _
@@ -161,9 +162,10 @@ public class TimerThree {
 
     }
 
-/**   ' 函数 My_qsort(a() As Double, b() As Integer) 对输入参数a(),b()进行排序，注：以a()为排序主体，b()随a()动且a,b等长
-//            ' 输入参数：a b——为输如数组；
-**/
+    /**
+     * ' 函数 My_qsort(a() As Double, b() As Integer) 对输入参数a(),b()进行排序，注：以a()为排序主体，b()随a()动且a,b等长
+     * //            ' 输入参数：a b——为输如数组；
+     **/
     public static void My_qsort(double[] a, Integer[] B) {
         int M, n, i, J = 0;
         M = a.length;
@@ -174,20 +176,63 @@ public class TimerThree {
                     My_swap(a[i], a[J]);
                     My_swap(B[i], B[J]);
                 }
-           }
+            }
         }
-   }
+    }
 
-   /**' 函数 My_swap((a As Variant, b As Variant) 对输入参数a,b互换位置运算
+    /**
+     * ' 函数 My_swap((a As Variant, b As Variant) 对输入参数a,b互换位置运算
+     * <p>
+     * ' 输入参数：a b——为输如；
+     * <p>
+     * '
+     **/
+    public static void My_swap(Object a, Object B) {
+        Object t = a;
+        a = B;
+        B = t;
+    }
 
-           ' 输入参数：a b——为输如；
+    /**
+     * ' 函数 My_ave(a() As Double) 对输入参数a()进行平均
+     * ' 输入参数：a——为输如数组；
+     */
+    public static double My_ave(double[] a) {
+        double[] B;
+        double Temp = 0;
+        int M = a.length;
+        B = new double[M];
+        for (int i = 1; i <= M; i++) {
+            B[i] = a[i];
+            Temp = Temp + B[i];
+        }
+        return Temp / M;
+    }
 
-           '**/
-   public  static void  My_swap(Object a , Object B){
-       Object t=a;
-       a=B;
-       B=t;
-   }
+    /**
+     * ' 函数 My_ave(a() As Double) 对输入参数a()取中值;偶数取中间二数平均,奇数取中值
+     * ' 输入参数：a——为输如数组；
+     */
+    private static double My_mida(double[] a) {
+        double[] C;
+        int M = a.length;
 
+        double[] B = new double[M];
+        C = new double[M];
+        for (int i = 1; i <= M; i++) {
+            B[i] = a[i];
+        }
+        for (int i = 1; i <= M; i++) {
+            for (int J = 1; J <= M; J++) {
+                My_swap(B[i], B[J]);
+            }
+        }
+        if (M % 2 == 0)
+            return (B[M / 2] + B[M / 2 + 1]) / 2;
+        else{
+            int tmp=(int)Math.floor(M/2); //取整
+            return (B[tmp-1]+B[tmp]+B[tmp + 1]+B[tmp + 2]+B[tmp + 3]) /5;
+        }
 
+    }
 }
